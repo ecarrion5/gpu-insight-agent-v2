@@ -1,0 +1,9 @@
+pandas>=2.0
+numpy>=1.24
+pydantic>=2.0
+openai>=1.0
+pyyaml>=6.0
+pytest>=8.0
+# MCP: the standalone fastmcp package keeps the stable API. The `mcp` package went to
+# v2 in 2026 (FastMCP -> MCPServer); fastmcp avoids that churn. Verified on fastmcp 3.4.6.
+fastmcp>=3.0

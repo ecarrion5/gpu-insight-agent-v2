@@ -1,0 +1,33 @@
+# The SPEC: a versioned, declarative contract for what the agent must do.
+# Nothing about HOW -- only WHAT, the constraints, and what counts as success.
+# This is the spec-driven-development idea applied to an agent's runtime task.
+version: 1
+name: gpu_perf_multiyear_insight
+
+goal: >
+  Surface non-obvious, decision-relevant patterns across 5 years of GPU performance
+  telemetry that have not previously been analyzed, grounded in real query results.
+
+dataset:
+  source: sample_data/
+  primary_keys: [timestamp, gpu_model]
+  known_metrics: [util_pct, temp_c, power_w]
+
+constraints:
+  max_insights: 5
+  max_tool_calls_per_goal: 6      # stops a runaway ReAct inner loop
+  temperature_planning: 0.7       # exploration wants diversity
+  temperature_grounding: 0.0      # grounding wants reproducibility
+  pii_allowed: false
+  require_grounding: true         # every insight must cite an executed result
+
+# Acceptance criteria double as the EVAL rubric (see evals/).
+acceptance_criteria:
+  - every insight references a real executed query result
+  - no insight makes a claim unsupported by its result_summary
+  - at least one insight is rated 'surprising'
+
+output_contract: Insight          # the Pydantic schema the output must satisfy
+
+human_in_the_loop:
+  approve_before_report: true     # a gate before results are finalized

@@ -1,0 +1,29 @@
+# EVAL SET: golden cases with deterministic ground truth.
+# The agent (or a component) is scored against these. Ground truth is computed by code,
+# never by an LLM -- that's what makes it a real eval and not vibes.
+#
+# These double as regression tests: if a change drops the score, you caught it before
+# shipping. The 'tolerance' lets numeric answers be graded fairly.
+
+cases:
+  - id: mean_temp_by_model
+    question: "What is the mean temp_c for each gpu_model?"
+    ground_truth_code: "result = df.groupby('gpu_model')['temp_c'].mean().round(1).to_dict()"
+    checks:
+      - type: numeric_dict_close
+        tolerance: 0.2
+
+  - id: hidden_pattern_mi300x_trend
+    question: "How does MI300X mean temp_c change year over year?"
+    ground_truth_code: >
+      result = df[df.gpu_model=='MI300X'].groupby('source_year')['temp_c'].mean().round(1).to_dict()
+    # This is the embedded 'surprising' pattern -- a strong agent should surface a rising trend.
+    checks:
+      - type: monotonic_increasing
+
+  - id: null_handling_2023
+    question: "What fraction of temp_c is null in source_year 2023?"
+    ground_truth_code: "result = float(round(df[df.source_year==2023]['temp_c'].isna().mean(), 2))"
+    checks:
+      - type: numeric_close
+        tolerance: 0.03
