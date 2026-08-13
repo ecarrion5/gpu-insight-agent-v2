@@ -1,5 +1,6 @@
 """TDD test suite for the safety-critical, deterministic components.
 
+Main points:
 The runtime "TDD loop" is the agent's generate -> execute -> validate -> retry cycle
 (in the orchestrator + guardrails). THIS file is development-time TDD: write the test
 first, then the code, for the parts that must never silently break -- the sandbox and

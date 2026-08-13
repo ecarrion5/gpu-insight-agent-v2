@@ -1,5 +1,6 @@
 """Observability: a structured trace of the whole run + token/cost accounting.
 
+Main points:
 You cannot improve, debug, or cost-control what you don't measure. Every step appends
 to a trace you can replay; every LLM call meters tokens. This is the systems-level
 version of the token-cost concern -- you don't just worry about it, you instrument it.
