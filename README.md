@@ -28,7 +28,7 @@ This is v2 of the earlier prototype. v1 proved "I can build an agent loop." v2 p
 
 ## Concept → where it lives (the map to study)
 
-| Concept you asked for | File | One-line "what it proves" |
+| Concept covered | File | One-line "what it proves" |
 |---|---|---|
 | **Spec** (spec-driven) | `specs/gpu_analysis.spec.yaml` + `src/spec.py` | Versioned task contract, validated at startup. |
 | **CLAUDE.md** (dev-time context) | `CLAUDE.md` | How coding agents build *this repo*. |
@@ -43,7 +43,7 @@ This is v2 of the earlier prototype. v1 proved "I can build an agent loop." v2 p
 | **Observability** | `src/observability.py` | Full trajectory trace + token/cost accounting. |
 | **Orchestration** | `src/orchestrator.py` | Explicit state machine; plan-and-execute + ReAct hybrid. |
 
-## Build / study order (add one layer at a time)
+## Build order (add one layer at a time)
 
 1. **Spec** (`spec.py`) — load and validate the contract. Everything reads from it.
 2. **Tools** (`tools.py`) — register capabilities with schemas; see function-calling.
@@ -52,6 +52,25 @@ This is v2 of the earlier prototype. v1 proved "I can build an agent loop." v2 p
 5. **Memory + Observability** — persistence and tracing.
 6. **MCP** (`mcp_server.py`, `mcp_client.py`) — add external domain-knowledge tools.
 7. **Evals + Tests** — lock it down so nothing regresses.
+
+## Ollama setup (fully local option)
+If you want Option B below (no API key), install and start Ollama first:
+```bash
+curl -fsSL https://ollama.com/install.sh | sh   # install
+systemctl status ollama 2>&1 || ollama serve &  # make sure the server is running
+ollama pull llama3.1                            # pull the model
+curl http://localhost:11434/api/tags            # sanity check
+```
+
+## Create virtual environment if desired
+```bash
+python3 -m venv ~/gpu-insight-agent-v2-env
+source ~/gpu-insight-agent-v2-env/bin/activate
+```
+- Deactive when done
+```bash
+deactivate
+```
 
 ## Run it
 
@@ -72,14 +91,6 @@ export OPENAI_API_KEY=sk-...
 python main.py                     # or:  python main.py --mcp
 ```
 
-## What's verified vs. what you should test on your machine
-- **Verified here (offline, no key):** pytest (8/8), evals (3/3), and a full end-to-end
-  orchestrator run driven by `MockLLM` (plan → ReAct tool loop → sandbox → ground →
-  guardrail → hook → memory). MCP verified via in-memory `Client(mcp)`.
-- **Test on your machine:** `main.py` with a real model, and the MCP **subprocess**
-  transport in `mcp_client.py` (spawns `python src/mcp_server.py` over stdio). The
-  in-memory path is verified; the subprocess path needs a normal (non-sandboxed) env.
-
 ## The plan-and-execute vs. ReAct point (be ready to explain)
 Top level is **plan-and-execute**: the planner emits all N analytical goals up front from
 the spec + memory. Inside each goal is a **ReAct** loop: the model picks a tool, the tool
@@ -88,7 +99,7 @@ hits the per-goal tool budget. Plan once at the top, react within a step — the
 production shape. (v1 was pure iterative/ReAct with a weak feedback signal; v2 adds real
 planning and memory.)
 
-## Honest caveats (say these — they read as senior)
+## Caveats
 - **Sandbox is prototype-grade**, not a boundary for adversarial code. Production: a
   container with no network, read-only FS, seccomp, cgroup limits, or a hosted executor.
 - **MCP SDK is churning** (the `mcp` package hit v2 in 2026, renaming FastMCP→MCPServer).
@@ -100,8 +111,11 @@ planning and memory.)
   scoring (LLM-as-judge, validated against human labels) and runs in CI.
 
 ## One level up (how I'd productionize)
-LangGraph for the state machine with checkpointing + durable human-in-the-loop · vector
-store memory · OpenTelemetry traces to Langfuse/Phoenix · MCP over HTTP with auth ·
-warehouse + lineage (dbt/OpenLineage) for the data layer · evals gated in CI · inference
-on Instinct GPUs as the case-study/tokens-per-dollar proof.
+- LangGraph for the state machine with checkpointing + durable human-in-the-loop 
+- Vector store memory 
+- OpenTelemetry traces to Langfuse/Phoenix 
+- MCP over HTTP with auth 
+- Warehouse + lineage (dbt/OpenLineage) for the data layer 
+- Evals gated in CI 
+- Inference on Instinct GPUs as the case-study/tokens-per-dollar proof.
 ```

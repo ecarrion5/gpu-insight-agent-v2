@@ -1,18 +1,18 @@
 """Safe execution of LLM-generated pandas code.
 
-This is the heart of the "fingers on the keyboard" story. NEVER exec() model output
-in your own process. Here I use defense in depth:
+Main points:
+NEVER exec() model output in your own process. Here I use defense in depth:
 
   1. AST validation BEFORE running anything: reject imports, dunder access, and
      dangerous builtin names. Fail fast, cheaply, without executing.
   2. Execution in a SEPARATE process with a hard timeout: a runaway or infinite loop
-     gets terminated, and a crash can't take down the agent.
+     gets terminated, and a crash can't take down agent.
   3. A restricted namespace: the code sees only pandas (pd), numpy (np), the dataframe
      (df), and a small allow-list of safe builtins. No open(), no __import__.
 
-Honest caveat (say this in the interview): this is a PROTOTYPE-grade sandbox, good
-enough for our own model's output. It is not a hardened boundary for adversarial code.
-In production I'd run untrusted code in a container with no network, a read-only
+Caveat: this is a prottype-grade sandbox, good enough for our own model's 
+output. It is not a hardened boundary for adversarial code. In production 
+I'd run untrusted code in a container with no network, a read-only
 filesystem, seccomp, and cgroup CPU/memory limits — or a hosted code-interpreter
 sandbox — and pass the worker a data path rather than pickling the whole frame.
 """

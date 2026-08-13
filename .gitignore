@@ -7,3 +7,5 @@
 # ignore sample data files
 **/sample_data/**
 
+# ignore json trace file
+trace.json

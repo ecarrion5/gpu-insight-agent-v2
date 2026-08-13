@@ -1,10 +1,10 @@
 """Deterministic data profiling. No LLM here, on purpose.
 
-Interview point (this is the one that answers BOTH "fingers on keyboard" AND the
-token-cost concern I raised with Clinton): I don't point an LLM at raw, messy data.
-I characterize the data with plain pandas first, then hand the agent a compact SCHEMA
-SUMMARY instead of the dataframe itself. Pointing an LLM at dirty, unschematized data
-just burns tokens producing confident nonsense — and a wide frame sends every column
+Main points:
+Don't point an LLM at raw, messy data. Characterize the data 
+with plain pandas first, then hand the agent a compact SCHEMA SUMMARY instead 
+of the dataframe itself. Pointing an LLM at dirty, unschematized data just 
+burns tokens producing confident nonsense — and a wide frame sends every column
 name and dtype on every single call.
 """
 

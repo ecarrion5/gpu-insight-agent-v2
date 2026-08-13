@@ -1,8 +1,9 @@
 """Pydantic schemas: the structured-output contract the LLM must satisfy.
 
-Interview point: this is how I enforce that an LLM's free-text output becomes a
-validated, machine-readable object. If the model returns something malformed, the
-constructor raises ValidationError and the agent loop re-prompts (see agent.py).
+Main points:
+This is how I enforce that an LLM's free-text output becomes a validated, 
+machine-readable object. If the model returns something malformed, the
+constructor raises the ValidationError and the agent loop re-prompts (see agent.py).
 Same technique I used in Thematica between the coding/theming/insight stages.
 """
 
@@ -35,7 +36,6 @@ class Insight(BaseModel):
     supporting_code: str
     result_summary: str = Field(..., description="The concrete numbers backing the finding")
     confidence: Literal["low", "medium", "high"]
-    # 'novelty' maps to Clinton's ask: surface things "not seen before".
     novelty: Literal["expected", "surprising"] = Field(
         ..., description="Whether this is a known pattern or a potentially unseen one"
     )

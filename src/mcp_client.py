@@ -4,9 +4,9 @@ The MCP client is async; the rest of my agent is sync. Rather than make everythi
 async, I run a private asyncio loop in a background thread and marshal calls to it.
 This is the standard "sync wrapper over an async library" pattern.
 
-Interview point: knowing WHY this is here (protocol client is async, agent loop is sync)
-and being able to explain run_coroutine_threadsafe is a concurrency signal. In
-production I'd keep one persistent session for the agent's lifetime -- which is exactly
+Main points:
+Needed because the protocol client is async and agent loop is sync. 
+In production I'd keep one persistent session for the agent's lifetime -- which is exactly
 what this class does (connect once in __init__, reuse, close at the end).
 """
 

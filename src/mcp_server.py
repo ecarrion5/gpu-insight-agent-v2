@@ -1,7 +1,7 @@
 """An MCP server exposing domain knowledge the agent needs: a metric glossary and a
 data catalog. Run standalone:  python src/mcp_server.py
 
-Interview points:
+Main points:
   * MCP standardizes how an agent gets external tools/context. This same server could be
     consumed by Claude Desktop, Cursor, or my agent -- write once, use anywhere.
   * I expose a `resource` (readable context: the catalog) AND a `tool` (a callable:
