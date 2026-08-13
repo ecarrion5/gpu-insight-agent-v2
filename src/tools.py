@@ -53,9 +53,14 @@ class ToolRegistry:
 
 # ---- local tools -------------------------------------------------------------
 
+_ALLOWED_AGGS = {"mean", "max", "min", "std", "count"}
+
+
 def _aggregate(df: pd.DataFrame, group_by: str, metric: str, agg: str = "mean") -> str:
     if group_by not in df.columns or metric not in df.columns:
         return f"error: unknown column(s). available: {list(df.columns)}"
+    if agg not in _ALLOWED_AGGS:
+        return f"error: unsupported agg {agg!r}, must be one of {sorted(_ALLOWED_AGGS)}"
     out = df.groupby(group_by)[metric].agg(agg).round(2).to_dict()
     return f"{agg} of {metric} by {group_by}: {out}"
 
