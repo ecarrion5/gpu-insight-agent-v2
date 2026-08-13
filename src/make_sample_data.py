@@ -1,13 +1,13 @@
 """Generates 5 'years' of synthetic GPU performance data, then normalizes it.
 
-Why this matters for the interview: it makes the messy-data story REAL. Each year uses
-DIFFERENT column names for the same metric (schema drift), one year has a null spike,
-and there's an embedded NON-OBVIOUS pattern for the agent to 'discover' (one GPU model
+Main points:
+The messy-data story is real and you have to account for it. Each year uses
+different column names for the same metric (schema drift), one year has a null spike,
+and there's an embeded non-obvious pattern for the agent to 'discover' (one GPU model
 quietly runs hotter per util-point in later years).
 
-build_dataset() is the deterministic normalization step -- the code an LLM should NOT
-be doing. This is the "understand the data first, with code" point you made to Clinton,
-now shown in code.
+build_dataset() is the deterministic normalization step - the code an LLM should NOT
+be doing. This is the "understand the data first, with code" point.
 """
 
 import numpy as np

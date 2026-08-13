@@ -1,6 +1,6 @@
 """The tool layer: every capability the agent has is a registered tool with a schema.
 
-Interview points:
+Main points:
   * This is real function calling (the model picks a tool + arguments), not free-form
     code-gen. Constrained tools are safer and more predictable than "write any pandas."
   * I keep ONE powerful escape-hatch tool (run_analysis_code, sandboxed) alongside

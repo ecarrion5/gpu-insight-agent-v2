@@ -1,6 +1,6 @@
 """Load and VALIDATE the spec. A spec you don't validate is just a hopeful comment.
 
-Interview point: the spec is the single source of truth for the run. Loading it through
+Main point: the spec is the single source of truth for the run. Loading it through
 a Pydantic model means an invalid or drifted spec fails loudly at startup, not halfway
 through a run after you've spent tokens.
 """

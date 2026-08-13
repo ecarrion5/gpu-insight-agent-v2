@@ -1,6 +1,6 @@
 """Model access, isolated to one module. Adds tool-calling support and a MockLLM.
 
-Interview points:
+Main points:
   * Single access point -> swapping OpenAI for local vLLM/Ollama or a gateway is a
     one-line base_url change.
   * MockLLM lets the whole agent, evals, and tests run with NO API key and NO network,

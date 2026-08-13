@@ -4,7 +4,8 @@ Scores the deterministic ground-truth answers (proving the eval mechanism), and 
 structured so you can plug the live agent in: give it each case's `question`, capture
 its answer, and grade with the same checkers.
 
-Interview point: an eval set turns "seems better" into a number. You freeze it, run it in
+Main points:
+An eval set turns "seems better" into a number. You freeze it, run it in
 CI, and treat every production failure as a new case. This is the discipline most agent
 projects skip -- and the one that was my own gap, now built in.
 """

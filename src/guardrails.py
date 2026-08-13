@@ -1,8 +1,7 @@
 """Guardrails: validation at the boundaries of the system. WHAT is allowed.
 
 A guardrail inspects data and blocks or flags it. Contrast with hooks.py, which fire
-AT lifecycle moments to observe/act. People conflate these; keeping them separate is
-the point:
+AT lifecycle moments to observe/act. These are separate things:
   * Guardrail  = a gate on content ("is this allowed to pass?").
   * Hook       = a callback at an event ("something happened; react").
 
