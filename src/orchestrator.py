@@ -45,13 +45,16 @@ class Orchestrator:
                "Avoid anything similar to the prior findings.")
         user = (f"GOAL: {spec.goal}\nSCHEMA:\n{schema}\n"
                 f"PRIOR FINDINGS (don't repeat): {recall}\n"
-                f"Output exactly {spec.constraints.max_insights} questions as a JSON list.")
+                f"Output exactly {spec.constraints.max_insights} questions as a JSON list of "
+                f'plain strings, e.g. ["question one", "question two"]. Do not wrap each '
+                f"question in an object.")
         msg = self.llm.chat([{"role": "system", "content": sys},
                              {"role": "user", "content": user}],
                             temperature=spec.constraints.temperature_planning)
         self.tracer.event("plan")
-        goals = json.loads(msg.content[msg.content.find("["):msg.content.rfind("]") + 1])
-        return goals[: spec.constraints.max_insights]
+        raw = json.loads(msg.content[msg.content.find("["):msg.content.rfind("]") + 1])
+        goals = [_normalize_goal(g) for g in raw[: spec.constraints.max_insights]]
+        return goals
 
     # -- ACT (per-goal ReAct tool-calling loop) --------------------------------
     def _act(self, spec: Spec, goal: str, df: pd.DataFrame) -> tuple[str, set[str]]:
@@ -132,3 +135,16 @@ class Orchestrator:
 def _tc_to_dict(tc) -> dict:
     return {"id": tc.id, "type": "function",
             "function": {"name": tc.function.name, "arguments": tc.function.arguments}}
+
+
+def _normalize_goal(g) -> str:
+    """The planner is asked for a JSON list of strings but sometimes wraps each
+    question in an object instead (e.g. {"question": "..."}). Accept that shape
+    too rather than letting a dict reach the string-only guardrails/prompts."""
+    if isinstance(g, str):
+        return g
+    if isinstance(g, dict):
+        for key in ("question", "goal", "text"):
+            if isinstance(g.get(key), str):
+                return g[key]
+    raise ValueError(f"planner returned a goal in an unexpected shape: {g!r}")
